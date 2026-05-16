@@ -1,0 +1,352 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Raptor Code — Pre-Launch</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #08080b;
+      --bg-soft: #121217;
+      --panel: #0f0f14;
+      --txt: #f7f7fb;
+      --muted: #a5a8b8;
+      --red-1: #ff1f45;
+      --red-2: #ff3a66;
+      --red-3: #8b0a23;
+      --line: #23232f;
+      --ok: #40c463;
+      --warn: #f2cc60;
+      --blue: #61afef;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; }
+    body {
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      color: var(--txt);
+      background:
+        radial-gradient(1100px 500px at 85% -10%, rgba(255, 31, 69, 0.25), transparent 60%),
+        radial-gradient(900px 400px at 10% 0%, rgba(139, 10, 35, 0.35), transparent 55%),
+        linear-gradient(180deg, #060608 0%, #0a0a10 40%, #0a0a10 100%);
+      min-height: 100vh;
+      line-height: 1.5;
+    }
+
+    .shell-noise::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.08;
+      background-image: radial-gradient(circle at 1px 1px, #fff 1px, transparent 0);
+      background-size: 3px 3px;
+      z-index: 0;
+    }
+
+    .container {
+      width: min(1100px, 92vw);
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+      padding: 24px 0 60px;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 26px;
+    }
+
+    .github-btn {
+      display: inline-flex;
+      gap: 8px;
+      align-items: center;
+      text-decoration: none;
+      color: #111318;
+      background: #fff;
+      font-weight: 700;
+      border-radius: 12px;
+      padding: 10px 14px;
+      border: 1px solid rgba(255,255,255,0.9);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.35);
+    }
+
+    .hero {
+      text-align: center;
+      margin: 10px auto 30px;
+      max-width: 900px;
+    }
+
+    .eyebrow {
+      display: inline-block;
+      color: #ffd9e0;
+      border: 1px solid rgba(255, 58, 102, 0.45);
+      background: rgba(255, 31, 69, 0.12);
+      border-radius: 999px;
+      padding: 6px 12px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 18px 0 12px;
+      font-size: clamp(34px, 6vw, 62px);
+      line-height: 1.08;
+      letter-spacing: -0.02em;
+    }
+
+    .hero p {
+      margin: 0 auto;
+      color: var(--muted);
+      max-width: 760px;
+      font-size: clamp(15px, 1.9vw, 19px);
+    }
+
+    .terminal-wrap {
+      margin-top: 34px;
+      border-radius: 18px;
+      background: linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,0));
+      border: 1px solid rgba(255,255,255,.08);
+      box-shadow: 0 15px 60px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,31,69,0.18) inset;
+      overflow: hidden;
+    }
+
+    .terminal-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: linear-gradient(180deg, #171722, #10101a);
+      border-bottom: 1px solid var(--line);
+      padding: 10px 14px;
+      color: #d2d4df;
+      font-size: 13px;
+    }
+
+    .dots { display: flex; gap: 7px; }
+    .dot {
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    .dot:nth-child(1) { background: #ff5f57; }
+    .dot:nth-child(2) { background: #febc2e; }
+    .dot:nth-child(3) { background: #28c840; }
+
+    .terminal {
+      margin: 0;
+      min-height: 560px;
+      max-height: 560px;
+      overflow: auto;
+      padding: 16px;
+      background:
+        linear-gradient(transparent 97%, rgba(255,255,255,0.02) 98%) 0 0/100% 24px,
+        #0a0a11;
+      font: 14px/1.5 "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+
+    .line { white-space: pre-wrap; }
+    .prompt { color: #ff8fa6; }
+    .muted { color: #8b8ea3; }
+    .ok { color: var(--ok); }
+    .warn { color: var(--warn); }
+    .blue { color: var(--blue); }
+    .red { color: #ff5e82; }
+    .tui {
+      margin: 10px 0;
+      border: 1px solid rgba(255, 62, 107, 0.4);
+      border-radius: 10px;
+      background: linear-gradient(180deg, rgba(255,31,69,0.15), rgba(255,31,69,0.02));
+      padding: 10px;
+      color: #ffd8e1;
+    }
+
+    .cursor {
+      display: inline-block;
+      width: 8px;
+      height: 16px;
+      vertical-align: text-bottom;
+      background: #e7e9ef;
+      animation: blink 1s steps(1) infinite;
+    }
+
+    @keyframes blink {
+      0%, 46% { opacity: 1; }
+      50%, 100% { opacity: 0; }
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 14px;
+      margin-top: 28px;
+    }
+
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: rgba(15, 15, 20, 0.75);
+      padding: 16px;
+      backdrop-filter: blur(4px);
+    }
+
+    .card h3 { margin: 0 0 6px; }
+    .card p, .card li { color: var(--muted); }
+    .card ul { margin: 10px 0 0 18px; padding: 0; }
+
+    footer {
+      margin-top: 30px;
+      padding-top: 20px;
+      border-top: 1px solid var(--line);
+      color: #83879a;
+      font-size: 13px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body class="shell-noise">
+  <div class="container">
+    <div class="topbar">
+      <a class="github-btn" href="https://github.com/jelenastricak/raptorcode" target="_blank" rel="noopener noreferrer" aria-label="Open Raptor Code on GitHub">
+        <span>GitHub Repository</span>
+      </a>
+    </div>
+
+    <section class="hero">
+      <span class="eyebrow">RaptorLabs • Pre-Launch</span>
+      <h1>Raptor Code — Global CLI Coding Agent</h1>
+      <p>Premium, high-performance terminal AI engineering. Install, launch, architect, reason, request approvals, generate diffs, and ship production code from a single Ubuntu CLI workflow.</p>
+    </section>
+
+    <section class="terminal-wrap" aria-label="Raptor Code terminal simulation">
+      <div class="terminal-top">
+        <div class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+        <div>ubuntu@raptorlabs: ~ — Raptor Code Preview</div>
+        <div class="muted">24x7 Live Session</div>
+      </div>
+      <div class="terminal" id="terminal"></div>
+    </section>
+
+    <section class="grid">
+      <article class="card">
+        <h3>FAQ</h3>
+        <ul>
+          <li><strong>When is launch?</strong> Public rollout starts with staged global access.</li>
+          <li><strong>Will it support teams?</strong> Yes, with approval gates and audit-friendly commits.</li>
+          <li><strong>Models?</strong> Multi-model routing with DeepSeek, GLM, Codex and more.</li>
+        </ul>
+      </article>
+      <article class="card">
+        <h3>Terms &amp; Conditions</h3>
+        <p>Preview shown for demonstration purposes. Model outputs may vary. Users remain responsible for repository access, approvals, and production deployment decisions.</p>
+      </article>
+      <article class="card">
+        <h3>Why Raptor Code</h3>
+        <p>Built for serious engineering teams: fast planning, deep code reasoning, guided approvals, clean diffs, commit hygiene, and enterprise-grade terminal UX.</p>
+      </article>
+    </section>
+
+    <footer>© 2026 RaptorLabs — Raptor Code pre-launch presentation.</footer>
+  </div>
+
+  <script>
+    const terminal = document.getElementById('terminal');
+    const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+    function line(html = '') {
+      const row = document.createElement('div');
+      row.className = 'line';
+      row.innerHTML = html;
+      terminal.appendChild(row);
+      terminal.scrollTop = terminal.scrollHeight;
+    }
+
+    async function typeLine(prefix, text, speed = 35) {
+      const row = document.createElement('div');
+      row.className = 'line';
+      const pre = document.createElement('span');
+      pre.className = 'prompt';
+      pre.textContent = prefix;
+      row.appendChild(pre);
+      const body = document.createElement('span');
+      row.appendChild(body);
+      const cursor = document.createElement('span');
+      cursor.className = 'cursor';
+      row.appendChild(cursor);
+      terminal.appendChild(row);
+
+      for (const char of text) {
+        body.textContent += char;
+        terminal.scrollTop = terminal.scrollHeight;
+        await sleep(speed + Math.random() * 25);
+      }
+
+      cursor.remove();
+      terminal.scrollTop = terminal.scrollHeight;
+      await sleep(220);
+    }
+
+    async function runDemo() {
+      terminal.innerHTML = '';
+      line('<span class="muted">Booting Raptor Code pre-launch terminal session...</span>');
+      await sleep(600);
+
+      await typeLine('ubuntu@raptorlabs:~$ ', 'sudo apt-get install raptor');
+      line('Reading package lists... Done');
+      await sleep(300);
+      line('Building dependency tree... Done');
+      await sleep(300);
+      line('Preparing to unpack <span class="blue">raptor_1.0.0_amd64.deb</span> ...');
+      await sleep(350);
+      line('Unpacking raptor (1.0.0) ...');
+      await sleep(300);
+      line('Setting up raptor (1.0.0) ...');
+      await sleep(300);
+      line('<span class="ok">✓ Installation complete. 237 MB deployed in 4.2s</span>');
+      await sleep(650);
+
+      await typeLine('ubuntu@raptorlabs:~$ ', 'raptor');
+      line('<div class="tui">┌──────────────── Raptor Code TUI ────────────────┐\n│  🦖 RAPTOR CORE ONLINE                           │\n│  Model Router: DeepSeek-R1 • GLM-4.6 • Codex-X  │\n│  Context: 128k • Policy: Safe-by-default         │\n│  Mode: Global Engineering / Approval-Gated       │\n└───────────────────────────────────────────────────┘</div>');
+      await sleep(700);
+
+      await typeLine('raptor> ', 'Build a full stack web application using NextJS, Material Design, Bootstrap, Motion Framer, RadixUI, shadcn with auth, billing, analytics, and CI/CD.');
+      line('<span class="red">● analyzing repository topology...</span>');
+      await sleep(500);
+      line('<span class="blue">↳ drafting architecture.md and sprint plan</span>');
+      await sleep(450);
+      line('<span class="blue">↳ generating API contracts, DB schema, and UI scaffolding</span>');
+      await sleep(450);
+      line('<span class="warn">approval required</span> open pull request #48 with 27 files changed? [Y/n] <span class="ok">Y</span>');
+      await sleep(500);
+      line('<span class="blue">diff --git a/apps/web/src/app/page.tsx b/apps/web/src/app/page.tsx</span>');
+      line('<span class="ok">+ add responsive dashboard, auth guard, motion transitions</span>');
+      await sleep(420);
+      line('<span class="blue">running checks:</span> pnpm lint && pnpm test && pnpm build');
+      await sleep(500);
+      line('<span class="ok">✓ lint passed</span> • <span class="ok">✓ tests passed</span> • <span class="ok">✓ build passed</span>');
+      await sleep(500);
+      line('<span class="blue">git commit -m "feat: bootstrap production full-stack foundation"</span>');
+      await sleep(350);
+      line('<span class="ok">[main 8f2ca81] feat: bootstrap production full-stack foundation</span>');
+      await sleep(350);
+      line('<span class="blue">git push origin feature/raptor-full-stack</span>');
+      await sleep(300);
+      line('<span class="ok">✓ pushed to mock GitHub repo</span>');
+      await sleep(550);
+      line('<span class="muted">session complete — ready for next command</span>');
+      line('<span class="prompt">raptor> </span><span class="cursor"></span>');
+
+      await sleep(2600);
+      runDemo();
+    }
+
+    runDemo();
+  </script>
+</body>
+</html>
